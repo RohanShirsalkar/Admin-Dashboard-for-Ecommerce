@@ -41,6 +41,17 @@ router.get("/:id", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
+  try {
+    const product = await db.product.create({ data: {} });
+    res.send({ product, message: "Product created successfully." });
+  } catch (error) {
+    console.log(error);
+    next(createError(500, error));
+  }
+});
+
+router.put("/:id", async (req, res, next) => {
+  const { id } = req.params;
   const {
     title,
     description,
@@ -51,31 +62,75 @@ router.post("/", async (req, res, next) => {
     categoryId,
     tags,
   } = req.body;
-  console.log(req.body);
-  if (!title || !price) {
-    return next(createError(404, "Missing required fields"));
-  }
 
+  if (!id) {
+    return next(createError(401, "Id is missing"));
+  }
   try {
-    const product = await db.product.create({
+    const product = await db.product.findUnique({ where: { id } });
+    if (!product) {
+      return next(createError(401, "No product found with given ID."));
+    }
+    const updatedProduct = await db.product.update({
+      where: { id },
       data: {
         title,
         description,
         stock,
+        status,
+        tags: { set: [], connect: tags?.map((id) => ({ id })) },
         imageUrl,
         price,
-        tags: { connect: tags.map((id) => ({ id })) },
-        status,
         categoryId,
       },
+      include: { tags: true },
     });
     res.send({
-      product: product,
-      message: "Product created successfully",
+      product: updatedProduct,
+      message: "Product updated successfully.",
     });
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    console.log(error);
+    next(createError(501, error));
   }
 });
+
+// router.post("/", async (req, res, next) => {
+//   const {
+//     title,
+//     description,
+//     stock,
+//     status,
+//     imageUrl,
+//     price,
+//     categoryId,
+//     tags,
+//   } = req.body;
+//   console.log(req.body);
+//   if (!title || !price) {
+//     return next(createError(404, "Missing required fields"));
+//   }
+
+//   try {
+//     const product = await db.product.create({
+//       data: {
+//         title,
+//         description,
+//         stock,
+//         imageUrl,
+//         price,
+//         tags: { connect: tags.map((id) => ({ id })) },
+//         status,
+//         categoryId,
+//       },
+//     });
+//     res.send({
+//       product: product,
+//       message: "Product created successfully",
+//     });
+//   } catch (e) {
+//     next(e);
+//   }
+// });
 
 module.exports = router;

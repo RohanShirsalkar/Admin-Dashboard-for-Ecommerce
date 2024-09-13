@@ -36,7 +36,7 @@ app.use("/api/category", require("./routes/category.route"));
 app.use("/api/tag", require("./routes/tags.route"));
 app.use(
   "/api/upload",
-  upload.single("image"),
+  upload.array("image", 5),
   require("./routes/upload.route")
 );
 

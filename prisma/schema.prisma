@@ -57,21 +57,21 @@ model Order {
 
 model Product {
   id           String         @id @default(uuid())
-  title        String
-  description  String
+  title        String?
+  description  String?
   thumbnailUrl String?
   imageUrl     String?
   images       Image[]
-  price        Int
-  stock        Int
+  price        Int?
+  stock        Int?
   status       ProductStatus? @default(DRAFT)
   totalSales   Int?           @default(0)
   ratings      Rating[]
   tags         Tag[]
   cart         Cart[]
   orders       Order[]
-  category     Category       @relation(fields: [categoryId], references: [id])
-  categoryId   String
+  category     Category?      @relation(fields: [categoryId], references: [id])
+  categoryId   String?
   createdate   DateTime       @default(now())
   updatedate   DateTime?      @updatedAt
 }
