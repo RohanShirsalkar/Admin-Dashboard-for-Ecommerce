@@ -5,37 +5,55 @@ const router = require("express").Router();
 
 const db = new PrismaClient();
 
+// Utility function for image uploads and retrieves
+function createImageArrayWithUrl(array, req) {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const images = array.map((img) => ({
+    id: img.id,
+    productId: img.productId,
+    url: `${baseUrl}/${img.path}`,
+    path: img.path,
+    filename: img.name,
+    uploadedAt: img.createdate,
+  }));
+  return images;
+}
+
 router.get("/", async (req, res, next) => {
   try {
     const response = await db.image.findMany();
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
-    const images = response.map((img) => ({
-      id: img.id,
-      productId: img.productId,
-      url: `${baseUrl}/${img.path}`,
-      path: img.path,
-      filename: img.name,
-      uploadedAt: img.createdate,
-    }));
-    res.send({ statusCode: "successful operation.", images });
+    res.send({
+      statusCode: "successful operation.",
+      images: createImageArrayWithUrl(response, req),
+    });
   } catch (error) {
     next(createError(500, error));
   }
 });
 
 router.post("/", async (req, res, next) => {
-  const { path, filename } = req.file;
+  const body = req.body;
+  const imageArray = req.files;
+  const userId = "4f16abae-c41d-42e9-b0a6-8940ad536bf2";
+  const productId = "09c1d68f-5c7e-4bac-bc19-a170b842de61";
   try {
-    const images = await db.image.create({
-      data: {
-        userId: "4f16abae-c41d-42e9-b0a6-8940ad536bf2",
-        productId: "ac58da65-ab20-4491-9dfa-01f68b80f0dc",
+    const response = await db.image.createMany({
+      data: imageArray.map(({ filename, path }) => ({
+        userId: userId,
+        productId: productId,
         name: filename,
         path: path,
-      },
+      })),
     });
-    res.send({ message: "Image has been uploaded successfully", data: images });
+    const images = await db.image.findMany({
+      where: { productId },
+    });
+    res.send({
+      message: "Image has been uploaded successfully",
+      data: createImageArrayWithUrl(images, req),
+    });
   } catch (error) {
+    console.log(error);
     next(createError(500, error));
   }
 });

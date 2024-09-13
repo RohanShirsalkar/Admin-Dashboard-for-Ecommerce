@@ -39,6 +39,11 @@ app.use(
   upload.array("image", 5),
   require("./routes/upload.route")
 );
+// app.use(
+//   "/api/upload",
+//   upload.single("image"),
+//   require("./routes/upload.route")
+// );
 
 app.use((req, res, next) => {
   next(createError.NotFound());
