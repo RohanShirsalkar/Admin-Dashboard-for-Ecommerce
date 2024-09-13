@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `cart` ADD COLUMN `cartTotal` INTEGER NULL DEFAULT 0,
+    MODIFY `qty` INTEGER NULL;

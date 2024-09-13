@@ -1,0 +1,27 @@
+{
+  "name": "tut_02_(relations)",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "@prisma/client": "^5.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^5.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

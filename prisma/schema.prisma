@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String?   @unique
+  phone         String?
+  role          Role?
+  cart          Cart?
+  orders        Order[]
+  ratings       Rating[]
+  address       Address[]
+  productImages Image[]
+}
+
+model Address {
+  id      String  @id @default(uuid())
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  street  String
+  city    String
+  state   String
+  pinCode String
+  orders  Order[]
+}
+
+model Cart {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String    @unique
+  qty       Int?
+  cartTotal Int?      @default(0)
+  products  Product[]
+}
+
+model Order {
+  id              String         @id @default(uuid())
+  user            User           @relation(fields: [userId], references: [id])
+  userId          String
+  products        Product[]
+  status          Status         @default(INPROGRESS)
+  totalPrice      Int?           @default(0)
+  paymentMethod   PaymentMethod?
+  paymentStatus   Status         @default(INPROGRESS)
+  deliveryAddress Address?       @relation(fields: [addressId], references: [id])
+  addressId       String?
+  createdate      DateTime       @default(now())
+  updatedate      DateTime?      @updatedAt
+}
+
+model Product {
+  id           String         @id @default(uuid())
+  title        String
+  description  String
+  thumbnailUrl String?
+  imageUrl     String?
+  images       Image[]
+  price        Int
+  stock        Int
+  status       ProductStatus? @default(DRAFT)
+  totalSales   Int?           @default(0)
+  ratings      Rating[]
+  tags         Tag[]
+  cart         Cart[]
+  orders       Order[]
+  category     Category       @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  createdate   DateTime       @default(now())
+  updatedate   DateTime?      @updatedAt
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  name     String
+  products Product[]
+}
+
+model Rating {
+  id       String    @id @default(uuid())
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score    Int
+  products Product[]
+}
+
+model Image {
+  id         String    @id @default(uuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  products   Product   @relation(fields: [productId], references: [id])
+  productId  String
+  path       String
+  name       String
+  createdate DateTime  @default(now())
+  updatedate DateTime? @updatedAt
+}
+
+enum Status {
+  COMPLETED
+  INPROGRESS
+  CANCLED
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVE
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  RAZORPAY
+  COD
+}
