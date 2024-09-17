@@ -14,7 +14,11 @@ const orderController = {
     try {
       const orders = await db.order.findMany({
         where: { userId: userId },
-        include: { products: true },
+        include: {
+          products: true,
+          user: true,
+          deliveryAddress: true,
+        },
       });
       return res.send({ orders: orders });
     } catch (error) {
@@ -55,16 +59,27 @@ const orderController = {
       if (!user) {
         return next(createError.NotFound("User not found"));
       }
+      let totalPrice = 0;
+      const productPromise = products.map(async (id) => {
+        const pResponse = await db.product.findUnique({
+          where: { id: id },
+          select: { price: true },
+        });
+        return pResponse?.price || 0;
+      });
+
+      const prices = await Promise.all(productPromise);
+      prices?.forEach((price) => (totalPrice += price));
       const newOrder = await db.order.create({
         data: {
           userId,
           products: {
             connect: products.map((id) => ({ id })),
           },
-          totalPrice: 10,
+          totalPrice,
         },
       });
-      res.send({ newOrder });
+      res.send({ order: newOrder });
     } catch (error) {
       console.log(error);
       next(error);

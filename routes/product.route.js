@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { ne } = require("@faker-js/faker");
 const { PrismaClient } = require("@prisma/client");
 const createError = require("http-errors");
 const { createImageArrayWithUrl } = require("../lib/utils/app.utils");
