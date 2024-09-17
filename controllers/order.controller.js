@@ -47,7 +47,14 @@ const orderController = {
   },
 
   createOrder: async (req, res, next) => {
-    const { userId, products } = req.body;
+    const {
+      userId,
+      products,
+      addressId,
+      paymentMethod,
+      paymentStatus,
+      status,
+    } = req.body;
     if (!userId) {
       return next(createError.BadRequest("Missing UserId in body"));
     }
@@ -73,10 +80,19 @@ const orderController = {
       const newOrder = await db.order.create({
         data: {
           userId,
+          addressId,
           products: {
             connect: products.map((id) => ({ id })),
           },
+          totalProducts: products?.length || 0,
           totalPrice,
+          paymentMethod: "COD",
+          paymentStatus: "INPROGRESS",
+          status: "INPROGRESS",
+        },
+        include: {
+          user: true,
+          deliveryAddress: true,
         },
       });
       res.send({ order: newOrder });
