@@ -34,6 +34,7 @@ app.use("/api/order", require("./routes/order.route"));
 app.use("/api/product", require("./routes/product.route"));
 app.use("/api/category", require("./routes/category.route"));
 app.use("/api/tag", require("./routes/tags.route"));
+app.use("/api/dashboard", require("./routes/dashboard_route"));
 app.use(
   "/api/upload",
   upload.array("image", 5),

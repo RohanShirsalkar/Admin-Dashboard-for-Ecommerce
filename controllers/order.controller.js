@@ -1,3 +1,4 @@
+const { ne } = require("@faker-js/faker");
 const { PrismaClient } = require("@prisma/client");
 const createError = require("http-errors");
 const db = new PrismaClient();
@@ -90,6 +91,19 @@ const orderController = {
     } catch (error) {
       console.log(error);
       next(error);
+    }
+  },
+
+  createManyOrders: async (req, res, next) => {
+    const { orders } = req.body;
+    if (!orders) {
+      return next(createError.BadRequest("Missing product in request body"));
+    }
+    try {
+      const response = await db.order.createMany({ data: orders });
+      res.send({ message: "Orders created" });
+    } catch (error) {
+      next(createError(500, "server error"));
     }
   },
 };
