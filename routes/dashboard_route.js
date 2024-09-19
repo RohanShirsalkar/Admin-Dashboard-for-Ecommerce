@@ -84,43 +84,40 @@ router.get("/chart-data", async (req, res, next) => {
     const ordersPromise = days.map(async (day, index) => {
       const istOffset = 5.5 * 60 * 60 * 1000;
       const d1 = subDays(new Date(), index);
-      if (index <= todaysDay) {
-        // 1.FIX TIMEZONES
-        // 2024-09-18T18:30:00.000Z --- 2024-09-19T08:29:59.999Z
-        // Time starts at 18:30:00 but it should be 00:00:00
-        // 2.FIX ARRAY ORDER FROM SUN TO SAT (Sunday to Saturday)
-        const startOfDay = set(d1, {
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          milliseconds: 0,
-        });
-        const endOfDay = set(d1, {
-          hours: 23,
-          minutes: 59,
-          seconds: 59,
-          milliseconds: 999,
-        });
-        console.log(startOfDay, "---", endOfDay);
+      // if (index <= todaysDay) {
+      // 1.FIX TIMEZONES
+      // 2024-09-18T18:30:00.000Z --- 2024-09-19T08:29:59.999Z
+      // Time starts at 18:30:00 but it should be 00:00:00
+      const startOfDay = set(d1, {
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      });
+      const endOfDay = set(d1, {
+        hours: 23,
+        minutes: 59,
+        seconds: 59,
+        milliseconds: 999,
+      });
+      console.log(startOfDay, "---", endOfDay);
 
-        const response = await db.order.count({
-          where: {
-            status: "COMPLETED",
-            createdate: {
-              gte: startOfDay,
-              lte: endOfDay,
-            },
+      const response = await db.order.count({
+        where: {
+          status: "COMPLETED",
+          createdate: {
+            gte: startOfDay,
+            lte: endOfDay,
           },
-        });
+        },
+      });
 
-        return {
-          day: days[todaysDay - index],
-          date: format(d1, "yyyy-MM-dd"),
-          sales: response,
-        };
-      } else {
-        return { day: days[index], date: format(d1, "yyyy-MM-dd"), sales: 0 };
-      }
+      return {
+        day: day,
+        date: format(d1, "yyyy-MM-dd"),
+        sales: response,
+      };
+      // }
     });
 
     const orders = await Promise.all(ordersPromise);
