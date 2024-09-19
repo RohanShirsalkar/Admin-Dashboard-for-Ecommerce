@@ -133,12 +133,12 @@ model Settings {
 }
 
 model SitePaymentMethod {
-  id         String    @id @default(uuid())
-  name       String?   @unique
-  settings   Settings? @relation(fields: [settingsId], references: [id])
+  id         String         @id @default(uuid())
+  name       PaymentMethod? @unique
+  settings   Settings?      @relation(fields: [settingsId], references: [id])
   settingsId String?
-  createdate DateTime  @default(now())
-  updatedate DateTime? @updatedAt
+  createdate DateTime       @default(now())
+  updatedate DateTime?      @updatedAt
 }
 
 enum Status {

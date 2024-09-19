@@ -113,22 +113,43 @@ router.post("/register-admin", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return next(createError(401, "Invalid Information"));
   }
-
   try {
     const user = await db.user.findUnique({ where: { email } });
-
     if (!user) {
       return next(createError(401, "User not found"));
     }
-
     res.send({ user });
   } catch (error) {
     console.log(error);
-    next(createError(error));
+    next(createError(500, "Internal Server Error"));
+  }
+});
+
+router.post("/login-admin", async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email) {
+    return next(createError(401, "Invalid Information"));
+  }
+  try {
+    const user = await db.user.findUnique({
+      where: { email },
+      include: { settings: true },
+    });
+    if (!user) {
+      return next(createError(401, "User not found"));
+    }
+    if (user.role !== "ADMIN") {
+      return next(
+        createError(403, "You are not authorized to perform this action")
+      );
+    }
+    res.send({ admin: user });
+  } catch (error) {
+    console.log(error);
+    next(createError(500, "Internal Server Error"));
   }
 });
 

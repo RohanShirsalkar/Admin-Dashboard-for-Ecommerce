@@ -14,6 +14,22 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.get("/:id", async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(createError(401, "Invalid ID"));
+  }
+  try {
+    const response = await db.settings.findUnique({
+      where: { id },
+      include: { user: true, SitePaymentMethods: true },
+    });
+    res.send({ response });
+  } catch (error) {
+    next(createError(500, "Internal server error"));
+  }
+});
+
 router.put("/:id", async (req, res, next) => {
   const { id } = req.params;
   const {
@@ -32,6 +48,10 @@ router.put("/:id", async (req, res, next) => {
     return next(createError.NotFound("Not Found"));
   }
   try {
+    const settings = await db.settings.findUnique({ where: { id } });
+    if (!settings) {
+      return next(createError.NotFound("Not Found"));
+    }
     const response = await db.settings.update({
       where: { id },
       data: {
