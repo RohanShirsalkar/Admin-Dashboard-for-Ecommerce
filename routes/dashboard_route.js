@@ -73,7 +73,7 @@ router.get("/chart-data", async (req, res, next) => {
     "Monday",
     "Tuesday",
     "Wednesday",
-    "Thursday ",
+    "Thursday",
     "Friday",
     "Saturday",
   ];
@@ -83,7 +83,10 @@ router.get("/chart-data", async (req, res, next) => {
     const sales = [];
     const ordersPromise = days.map(async (day, index) => {
       const istOffset = 5.5 * 60 * 60 * 1000;
-      const d1 = subDays(new Date(), index);
+      const d1 = subDays(
+        new Date(d0.getTime() + istOffset),
+        index <= todaysDay ? todaysDay - index : index - (todaysDay + 2) // to get the day of week for nd tomorrow, start with -1 and so on
+      );
       // if (index <= todaysDay) {
       // 1.FIX TIMEZONES
       // 2024-09-18T18:30:00.000Z --- 2024-09-19T08:29:59.999Z
@@ -100,7 +103,6 @@ router.get("/chart-data", async (req, res, next) => {
         seconds: 59,
         milliseconds: 999,
       });
-      console.log(startOfDay, "---", endOfDay);
 
       const response = await db.order.count({
         where: {
