@@ -5,15 +5,13 @@ const db = new PrismaClient();
 
 const orderController = {
   findUserOrders: async (req, res, next) => {
-    const { userId } = req.query;
-
+    const { userId, status } = req.query;
     if (!userId) {
       return next(createError.BadRequest("Missing userId in query parameters"));
     }
-
     try {
       const orders = await db.order.findMany({
-        where: { userId: userId },
+        where: { userId: userId, status: status },
         include: {
           products: true,
           user: true,
@@ -86,9 +84,9 @@ const orderController = {
           },
           totalProducts: products?.length || 0,
           totalPrice,
-          paymentMethod: "COD",
-          paymentStatus: "INPROGRESS",
-          status: "INPROGRESS",
+          paymentMethod: paymentMethod,
+          paymentStatus: paymentStatus,
+          status: status,
         },
         include: {
           user: true,

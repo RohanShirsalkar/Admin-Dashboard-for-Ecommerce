@@ -16,9 +16,26 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.get("/customers", async (req, res, next) => {
+  const { adminId } = req.query;
+  if (!adminId) {
+    return next(createError(401, "Admin ID is required"));
+  }
+  try {
+    const customers = await db.user.findMany({
+      where: { adminId },
+      include: {
+        _count: { select: { orders: true } },
+      },
+    });
+    res.send({ customers });
+  } catch (error) {
+    next(createError(500, "Internal Server Error"));
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
-
   try {
     const user = await db.user.findUnique({ where: { id } });
     if (!user) throw createError(401, "User not found");

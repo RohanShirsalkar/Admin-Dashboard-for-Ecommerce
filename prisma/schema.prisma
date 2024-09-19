@@ -12,12 +12,17 @@ model User {
   name          String
   email         String?   @unique
   phone         String?
+  adminId       String?
+  admin         User?     @relation("UserAdminRelation", fields: [adminId], references: [id])
+  customers     User[]    @relation("UserAdminRelation")
   role          Role?
   cart          Cart?
   orders        Order[]
   ratings       Rating[]
   address       Address[]
   productImages Image[]
+  createdate    DateTime  @default(now())
+  updatedate    DateTime? @updatedAt
 }
 
 model Address {
