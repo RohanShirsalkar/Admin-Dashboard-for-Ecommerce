@@ -78,6 +78,39 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
+router.post("/register-admin", async (req, res, next) => {
+  const body = req.body;
+
+  if (!body.email || !body.name || !body.phone) {
+    return next(createError(401, "Invalid Information"));
+  }
+
+  // Add a condition to create a new admin (could be a security code)
+  try {
+    var user = await db.user.create({
+      data: {
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        role: "ADMIN",
+      },
+      include: { settings: true, cart: true },
+    });
+
+    var settings = await db.settings.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    res.send({
+      user: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
 

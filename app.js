@@ -35,16 +35,12 @@ app.use("/api/product", require("./routes/product.route"));
 app.use("/api/category", require("./routes/category.route"));
 app.use("/api/tag", require("./routes/tags.route"));
 app.use("/api/dashboard", require("./routes/dashboard_route"));
+app.use("/api/settings", require("./routes/settings.route"));
 app.use(
   "/api/upload",
   upload.array("image", 5),
   require("./routes/upload.route")
 );
-// app.use(
-//   "/api/upload",
-//   upload.single("image"),
-//   require("./routes/upload.route")
-// );
 
 app.use((req, res, next) => {
   next(createError.NotFound());

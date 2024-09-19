@@ -21,6 +21,7 @@ model User {
   ratings       Rating[]
   address       Address[]
   productImages Image[]
+  settings      Settings?
   createdate    DateTime  @default(now())
   updatedate    DateTime? @updatedAt
 }
@@ -110,6 +111,32 @@ model Image {
   productId  String
   path       String
   name       String
+  createdate DateTime  @default(now())
+  updatedate DateTime? @updatedAt
+}
+
+model Settings {
+  id                 String              @id @default(uuid())
+  user               User?               @relation(fields: [userId], references: [id])
+  userId             String              @unique
+  storeName          String?
+  description        String?
+  supportEmail       String?
+  supportPhone       String?
+  bussinessStreet    String?
+  bussinessCity      String?
+  bussinessState     String?
+  bussinessPinCode   String?
+  SitePaymentMethods SitePaymentMethod[]
+  createdate         DateTime            @default(now())
+  updatedate         DateTime?           @updatedAt
+}
+
+model SitePaymentMethod {
+  id         String    @id @default(uuid())
+  name       String?   @unique
+  settings   Settings? @relation(fields: [settingsId], references: [id])
+  settingsId String?
   createdate DateTime  @default(now())
   updatedate DateTime? @updatedAt
 }
