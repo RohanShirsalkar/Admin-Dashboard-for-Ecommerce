@@ -32,11 +32,8 @@ router.get("/product-images", async (req, res, next) => {
 });
 
 router.post("/product-images", async (req, res, next) => {
-  const { productId } = req.body;
+  const { productId, userId } = req.body;
   const imageArray = req.files;
-  console.log(imageArray);
-  const userId = "4f16abae-c41d-42e9-b0a6-8940ad536bf2";
-  // const productId = "1885260e-1768-486f-8fe5-4eadeb218dff";
   try {
     const response = await db.image.createMany({
       data: imageArray.map(({ filename, path }) => ({

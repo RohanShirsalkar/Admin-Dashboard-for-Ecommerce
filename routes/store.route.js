@@ -20,10 +20,13 @@ router.get("/:id", async (req, res, next) => {
     return next(createError(401, "Invalid ID"));
   }
   try {
-    const response = await db.settings.findUnique({
+    const response = await db.store.findUnique({
       where: { id },
       include: { user: true, SitePaymentMethods: true },
     });
+    if (!response) {
+      return next(createError(401, "No settings found with this id"));
+    }
     res.send({ response });
   } catch (error) {
     next(createError(500, "Internal server error"));

@@ -1,12 +1,12 @@
 const { subDays, format, set } = require("date-fns");
 
 const d0 = new Date();
-const targetDate = subDays(new Date(), 0);
+const targetDate = subDays(new Date(), -1);
 // const formattedDate = format(targetDate, "yyyy-MM-dd");
-const istOffset = 5.5 * 60 * 60 * 1000;
-const d1 = subDays(new Date(d0.getTime() + istOffset), -2);
+// const istOffset = 5.5 * 60 * 60 * 1000;
+// const d1 = subDays(new Date(d0.getTime() + istOffset), -2);
 
-console.log(4 - 5);
+console.log(targetDate);
 // const date = new Date(formattedDate);
 
 // const fromDate = new Date(date.setHours(0, 0, 0, 0));

@@ -37,7 +37,14 @@ router.get("/customers", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
   try {
-    const user = await db.user.findUnique({ where: { id } });
+    const user = await db.user.findUnique({
+      where: { id },
+      include: {
+        store: {
+          include: { id: true },
+        },
+      },
+    });
     if (!user) throw createError(401, "User not found");
     res.send({ User: user });
   } catch (error) {
@@ -80,11 +87,9 @@ router.post("/register", async (req, res, next) => {
 
 router.post("/register-admin", async (req, res, next) => {
   const body = req.body;
-
   if (!body.email || !body.name || !body.phone) {
     return next(createError(401, "Invalid Information"));
   }
-
   // Add a condition to create a new admin (could be a security code)
   try {
     var user = await db.user.create({
@@ -94,15 +99,13 @@ router.post("/register-admin", async (req, res, next) => {
         phone: body.phone,
         role: "ADMIN",
       },
-      include: { settings: true, cart: true },
+      include: { store: true, cart: true },
     });
-
-    var settings = await db.settings.create({
+    var store = await db.store.create({
       data: {
         userId: user.id,
       },
     });
-
     res.send({
       user: user,
     });
@@ -136,7 +139,7 @@ router.post("/login-admin", async (req, res, next) => {
   try {
     const user = await db.user.findUnique({
       where: { email },
-      include: { settings: true },
+      include: { store: true },
     });
     if (!user) {
       return next(createError(401, "User not found"));

@@ -11,7 +11,8 @@ const orderController = {
     }
     try {
       const orders = await db.order.findMany({
-        where: { userId: userId, status: status },
+        // where: { userId: userId, status: status },
+        where: { user: { adminId: userId }, status: status },
         include: {
           products: true,
           user: true,

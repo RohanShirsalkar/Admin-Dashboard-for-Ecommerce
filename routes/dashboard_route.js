@@ -82,10 +82,10 @@ router.get("/chart-data", async (req, res, next) => {
   try {
     const sales = [];
     const ordersPromise = days.map(async (day, index) => {
-      const istOffset = 5.5 * 60 * 60 * 1000;
+      const istOffset = 5.5 * 60 * 60 * 1000; // disturbs the current timezone by almost one day
       const d1 = subDays(
-        new Date(d0.getTime() + istOffset),
-        index <= todaysDay ? todaysDay - index : index - (todaysDay + 2) // to get the day of week for nd tomorrow, start with -1 and so on
+        new Date(),
+        index <= todaysDay ? todaysDay - index : todaysDay - index // to get the day of week for nd tomorrow, start with -1 and so on
       );
       // if (index <= todaysDay) {
       // 1.FIX TIMEZONES
